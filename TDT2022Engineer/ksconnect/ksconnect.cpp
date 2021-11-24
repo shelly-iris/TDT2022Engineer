@@ -49,7 +49,11 @@ namespace ksconnect
         cv::Point2f hypothetical = cv::Point2f(0, 0); //假设点
         hypothetical.x = centerPoint.x + 30;
         hypothetical.y = centerPoint.y;
+<<<<<<< HEAD
         sendAngle22 = angle22(hypothetical, squarePoint, centerPoint) * 57.3f;
+=======
+        sendAngle22 = 45 - angle22(hypothetical, squarePoint, centerPoint) * 57.3f;
+>>>>>>> main
         return sendAngle22; //+45?
     }
     void ksDetect::Get(cv::Mat &img)
@@ -301,7 +305,11 @@ namespace ksconnect
                                                     if (squareSingle.center_.x < center.x && squareSingle.center_.y < center.y)
                                                     { //rec在左上
 
+<<<<<<< HEAD
                                                         this->sendAngle1 = getSendangle(center, squareSingle.center_)+45;
+=======
+                                                        this->sendAngle1 = getSendangle(center, squareSingle.center_);
+>>>>>>> main
                                                         this->judgeFlag = 3;
                                                         cv::line(img, center, squareSingle.center_, cv::Scalar(0, 0, 255), 2);
                                                         cv::putText(img, "UP", center, cv::FONT_HERSHEY_PLAIN, 2, cv::Scalar(0, 0, 255), 5, 8, 0);
@@ -326,7 +334,11 @@ namespace ksconnect
                                                 {
                                                     if (squareSingle.center_.x > center.x && squareSingle.center_.y > center.y)
                                                     { //rec在右下
+<<<<<<< HEAD
                                                         this->sendAngle1 = 45-getSendangle(center, squareSingle.center_);
+=======
+                                                        this->sendAngle1 = getSendangle(center, squareSingle.center_);
+>>>>>>> main
                                                         this->judgeFlag = 3;
                                                         cv::line(img, center, squareSingle.center_, cv::Scalar(0, 0, 255), 2);
                                                         cv::putText(img, "DOWN", center, cv::FONT_HERSHEY_PLAIN, 2, cv::Scalar(0, 0, 255), 5, 8, 0);
@@ -387,7 +399,11 @@ namespace ksconnect
                                                 {
                                                     if (squareSingle.center_.x < center.x && squareSingle.center_.y > center.y)
                                                     { //rec在左下
+<<<<<<< HEAD
                                                         this->sendAngle1 = getSendangle(center, squareSingle.center_)+45;
+=======
+                                                        this->sendAngle1 = getSendangle(center, squareSingle.center_);
+>>>>>>> main
                                                         this->judgeFlag = 3;
                                                         cv::line(img, center, squareSingle.center_, cv::Scalar(0, 0, 255), 2);
                                                         cv::putText(img, "LEFT", center, cv::FONT_HERSHEY_PLAIN, 2, cv::Scalar(0, 0, 255), 5, 8, 0);
@@ -412,7 +428,11 @@ namespace ksconnect
                                                 {
                                                     if (squareSingle.center_.x > center.x && squareSingle.center_.y < center.y)
                                                     { //rec在右上
+<<<<<<< HEAD
                                                         this->sendAngle1 = getSendangle(center, squareSingle.center_)+45;
+=======
+                                                        this->sendAngle1 = getSendangle(center, squareSingle.center_);
+>>>>>>> main
                                                         this->judgeFlag = 3;
                                                         cv::line(img, center, squareSingle.center_, cv::Scalar(0, 0, 255), 2);
                                                         cv::putText(img, "RIGHT", center, cv::FONT_HERSHEY_PLAIN, 2, cv::Scalar(0, 0, 255), 5, 8, 0);
