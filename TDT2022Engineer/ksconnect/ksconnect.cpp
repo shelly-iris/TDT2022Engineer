@@ -239,17 +239,40 @@ namespace ksconnect
         L_RD.clear();
         square.clear();
     }
-    void ksDetect::aroundJudge(Mat &img,Point &center)
+    bool ksDetect::aroundJudge(Mat &imgRoi, Point &center)
     {
-        
+        float blackcount = 0;
+        float whitecount = 0;
+        float rate = 0;
+        bool flagblack;
+        for (int i = 0; i < imgRoi.rows; i++)
+        {
+            for (int j = 0; j < imgRoi.cols; j++)
+            {
+                if (imgRoi.at<uchar>(i, j) == 0)
+                {
+                    blackcount++;
+                }
+                else
+                    whitecount++;
+            }
+            rate = blackcount / (blackcount + whitecount);
+            cout << "rate" << rate << endl;
+            if (rate > 0.1) //代测试的参数
+                flagblack = true;
+            else
+                flagblack = false;
+            return flagblack;
+        }
     }
     void ksDetect::modelJudge(Mat &img, std::vector<engineer_tool::modelL> &L_LU,
                               std::vector<engineer_tool::modelL> &L_LD, std::vector<engineer_tool::modelL> &L_RD,
                               std::vector<engineer_tool::modelL> &L_RU, std::vector<engineer_tool::modelL> &square)
     {
         //diagonal=对角线，standardLen=标志块基础长度（rec边长，L型最长的边）
-
-        const int Range = 30; //30
+        Mat imgThershold;
+        threshold(img, imgThershold, 120, 255, THRESH_BINARY); //190
+        const int Range = 30;                                  //30
         double diagonal,
             standardLen,
             value;
@@ -281,8 +304,13 @@ namespace ksconnect
                                         if (distance(squareSingle.center_, center) > diagonal * 0.5 - Range && distance(squareSingle.center_, center) < diagonal * 0.5 + Range)
                                         {
                                             //to do哪一个面
-                                            aroundJudge(img,center);
-                                            cv::putText(img, "opposite", center, cv::FONT_HERSHEY_PLAIN, 2, cv::Scalar(0, 0, 255), 5, 8, 0);
+                                            Mat roimg = imgThershold(Rect(center.x, center.y, 10, 10));
+                                            if (aroundJudge(roimg, center) == true)
+                                            {
+                                                cv::putText(img, "me", center, cv::FONT_HERSHEY_PLAIN, 2, cv::Scalar(0, 0, 255), 5, 8, 0);
+                                            }
+                                            else
+                                                cv::putText(img, "opposite", center, cv::FONT_HERSHEY_PLAIN, 2, cv::Scalar(0, 0, 255), 5, 8, 0);
                                         }
                                     }
                                 }
@@ -303,8 +331,7 @@ namespace ksconnect
                                                     if (squareSingle.center_.x < center.x && squareSingle.center_.y < center.y)
                                                     { //rec在左上
 
-                                                        this->sendAngle1 = getSendangle(center, squareSingle.center_)+45;
-
+                                                        this->sendAngle1 = getSendangle(center, squareSingle.center_) + 45;
                                                         this->judgeFlag = 3;
                                                         cv::line(img, center, squareSingle.center_, cv::Scalar(0, 0, 255), 2);
                                                         cv::putText(img, "UP", center, cv::FONT_HERSHEY_PLAIN, 2, cv::Scalar(0, 0, 255), 5, 8, 0);
@@ -329,7 +356,7 @@ namespace ksconnect
                                                 {
                                                     if (squareSingle.center_.x > center.x && squareSingle.center_.y > center.y)
                                                     { //rec在右下
-                                                        this->sendAngle1 = 45-getSendangle(center, squareSingle.center_);
+                                                        this->sendAngle1 = 45 - getSendangle(center, squareSingle.center_);
 
                                                         this->judgeFlag = 3;
                                                         cv::line(img, center, squareSingle.center_, cv::Scalar(0, 0, 255), 2);
@@ -370,8 +397,14 @@ namespace ksconnect
                                     {
                                         if (distance(squareSingle.center_, center) > diagonal * 0.5 - Range && distance(squareSingle.center_, center) < diagonal * 0.5 + Range)
                                         {
+                                            Mat roimg = imgThershold(Rect(center.x, center.y, 10, 10));
+                                            if (aroundJudge(roimg, center) == true)
+                                            {
+                                                cv::putText(img, "me", center, cv::FONT_HERSHEY_PLAIN, 2, cv::Scalar(0, 0, 255), 5, 8, 0);
+                                            }
+                                            else
+                                                cv::putText(img, "opposite", center, cv::FONT_HERSHEY_PLAIN, 2, cv::Scalar(0, 0, 255), 5, 8, 0);
                                             //to do哪一个面
-                                            cv::putText(img, "opposite", center, cv::FONT_HERSHEY_PLAIN, 2, cv::Scalar(0, 0, 255), 5, 8, 0);
                                         }
                                     }
                                 }
@@ -391,7 +424,7 @@ namespace ksconnect
                                                 {
                                                     if (squareSingle.center_.x < center.x && squareSingle.center_.y > center.y)
                                                     { //rec在左下
-                                                        this->sendAngle1 = getSendangle(center, squareSingle.center_)+45;
+                                                        this->sendAngle1 = getSendangle(center, squareSingle.center_) + 45;
 
                                                         this->judgeFlag = 3;
                                                         cv::line(img, center, squareSingle.center_, cv::Scalar(0, 0, 255), 2);
@@ -417,7 +450,7 @@ namespace ksconnect
                                                 {
                                                     if (squareSingle.center_.x > center.x && squareSingle.center_.y < center.y)
                                                     { //rec在右上
-                                                        this->sendAngle1 = getSendangle(center, squareSingle.center_)+45;
+                                                        this->sendAngle1 = getSendangle(center, squareSingle.center_) + 45;
 
                                                         this->judgeFlag = 3;
                                                         cv::line(img, center, squareSingle.center_, cv::Scalar(0, 0, 255), 2);
