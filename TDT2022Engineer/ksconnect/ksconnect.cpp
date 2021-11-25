@@ -14,7 +14,7 @@ namespace ksconnect
         pyrDown(src, pyr, Size(src.cols / 2, src.rows / 2)); //高斯降噪，并只取奇数行列缩小图片    // 缩小和放大图像以滤除噪音
         pyrUp(pyr, src, src.size());                         //插入偶数行列，再次高斯降噪
         cvtColor(src, img, COLOR_BGR2GRAY);
-        threshold(img, img_thresholded, 120, 255, THRESH_BINARY); //190
+        threshold(img, img_thresholded, 140, 255, THRESH_BINARY); //190
         Canny(img_thresholded, img_thresholded, 100, 200, 3);
         this->ksoperate = img_thresholded.clone();
         imshow("operate", ksoperate);
@@ -54,7 +54,13 @@ namespace ksconnect
 
         return sendAngle22; //+45?
     }
-    void ksDetect::Get(cv::Mat &img)
+    void ksDetect::start(tdtusart::Send_Struct_t &sendMessage)
+    {
+        sendMessage.judgeFlag = this->judgeFlag;
+        sendMessage.sendAngle1 = this->sendAngle1;
+        cout << "qq" << sendMessage.sendAngle1 << endl;
+    }
+    void ksDetect::Get(cv::Mat &img, tdtusart::Send_Struct_t &sendMessage)
     {
 
         vector<vector<Point>> all_contours;
@@ -231,7 +237,7 @@ namespace ksconnect
         drawContours(img, L2, -1, cv::Scalar(0, 0, 255), 2, 8);
         drawContours(img, L3, -1, cv::Scalar(0, 0, 255), 2, 8);
         drawContours(img, L4, -1, cv::Scalar(0, 0, 255), 2, 8);
-
+        start(sendMessage);
         imshow("origin", img);
         L_RU.clear();
         L_LD.clear();
@@ -320,7 +326,7 @@ namespace ksconnect
                                 for (const auto &rdSingle : L_RD)
                                 {
                                     if (distance(center, rdSingle.center_) < diagonal * 0.5 + Range && distance(center, rdSingle.center_) > diagonal * 0.5 - Range)
-                                        if (rdSingle.center_.x > center.x && rdSingle.center_.y < center.y)
+                                        if (rdSingle.center_.x > center.x && rdSingle.center_.y > center.y)
                                         {
                                             cv::line(img, center, rdSingle.center_, cv::Scalar(0, 0, 255), 2);
                                             for (const auto &squareSingle : square)
@@ -331,7 +337,7 @@ namespace ksconnect
                                                     if (squareSingle.center_.x < center.x && squareSingle.center_.y < center.y)
                                                     { //rec在左上
 
-                                                        this->sendAngle1 = getSendangle(center, squareSingle.center_) + 45;
+                                                        this->sendAngle1 = -getSendangle(center, squareSingle.center_) + 45;
                                                         this->judgeFlag = 3;
                                                         cv::line(img, center, squareSingle.center_, cv::Scalar(0, 0, 255), 2);
                                                         cv::putText(img, "UP", center, cv::FONT_HERSHEY_PLAIN, 2, cv::Scalar(0, 0, 255), 5, 8, 0);
@@ -424,7 +430,7 @@ namespace ksconnect
                                                 {
                                                     if (squareSingle.center_.x < center.x && squareSingle.center_.y > center.y)
                                                     { //rec在左下
-                                                        this->sendAngle1 = getSendangle(center, squareSingle.center_) + 45;
+                                                        this->sendAngle1 = -getSendangle(center, squareSingle.center_) + 45;
 
                                                         this->judgeFlag = 3;
                                                         cv::line(img, center, squareSingle.center_, cv::Scalar(0, 0, 255), 2);
@@ -449,8 +455,8 @@ namespace ksconnect
                                                 if (distance(squareSingle.center_, center) > diagonal * 0.5 - Range && distance(squareSingle.center_, center) < diagonal * 0.5 + Range)
                                                 {
                                                     if (squareSingle.center_.x > center.x && squareSingle.center_.y < center.y)
-                                                    { //rec在右上
-                                                        this->sendAngle1 = getSendangle(center, squareSingle.center_) + 45;
+                                                    {                                                                        //rec在右上
+                                                        this->sendAngle1 = -getSendangle(center, squareSingle.center_) + 45; //+45
 
                                                         this->judgeFlag = 3;
                                                         cv::line(img, center, squareSingle.center_, cv::Scalar(0, 0, 255), 2);

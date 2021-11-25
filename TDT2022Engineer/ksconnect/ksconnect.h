@@ -20,9 +20,10 @@ namespace ksconnect
         }
         ~ksDetect() {}
         void getksBar(cv::Mat &src);
-        void Get(cv::Mat &img);
+        void Get(cv::Mat &img, tdtusart::Send_Struct_t &sendMessage);
 
-        bool aroundJudge(cv::Mat &img,cv::Point &center);
+        bool aroundJudge(cv::Mat &img, cv::Point &center);
+        void start(tdtusart::Send_Struct_t &sendMessage);
 
         void modelJudge(cv::Mat &img, std::vector<engineer_tool::modelL> &L_LU,
                         std::vector<engineer_tool::modelL> &L_LD, std::vector<engineer_tool::modelL> &L_RD,
